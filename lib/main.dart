@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sakhi/community/communityhome.dart';
+import 'package:sakhi/save/savehome.dart';
 import 'package:sakhi/theme/app_theme.dart';
 
 void main() {
@@ -19,7 +20,7 @@ class CommunityApp extends StatelessWidget {
       // Apply the custom community theme here
       home: Theme(
         data: AppTheme.communityTheme,
-        child: const CommunityHomePage(),
+        child: const HomePage(),
       ),
     );
   }

@@ -1,0 +1,142 @@
+// lib/pages/savings_plan_page.dart
+
+import 'package:flutter/material.dart';
+import 'package:sakhi/theme/save_theme.dart';
+class SavingsPlanPage extends StatelessWidget {
+  const SavingsPlanPage({super.key});
+
+  final List<Map<String, String>> _savingsMethods = const [
+    {
+      'name': 'Traditional Piggy Bank',
+      'description': 'Simple and direct. Great for starting with small amounts at home.',
+      'icon': '🐷',
+    },
+    {
+      'name': 'Post Office RD (Recurring Deposit)',
+      'description': 'Safe government-backed option for regular, small deposits. Good interest rates.',
+      'icon': '📮',
+    },
+    {
+      'name': 'Bank RD (Recurring Deposit)',
+      'description': 'Similar to PO RD, offered by commercial banks. Flexible tenures.',
+      'icon': '🏦',
+    },
+    {
+      'name': 'Sukanya Samriddhi Yojana (SSY)',
+      'description': 'Special government scheme for girl children\'s education and marriage. Tax benefits.',
+      'icon': '👧',
+    },
+    {
+      'name': 'Mahila Samman Savings Certificate (MSSC)',
+      'description': 'New scheme for women with attractive interest rates and short tenure.',
+      'icon': '✨',
+    },
+  ];
+
+  final List<String> _inspirationalQuotes = const [
+    "छोटी बचत, बड़े सपने।", // Small savings, big dreams.
+    "आज की बचत, कल की आज़ादी।", // Today's savings, tomorrow's freedom.
+    "एक-एक बूंद से घड़ा भरता है।", // Drop by drop, the pot fills.
+    "बचत करने की आदत, आत्मनिर्भरता की राह।", // The habit of saving, the path to self-reliance.
+    "हर रुपया आपके भविष्य की नींव है।", // Every rupee is the foundation of your future.
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ListView(
+        children: [
+          Text(
+            'Explore Savings Methods',
+            style: Theme.of(context).textTheme.headlineSmall,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Choose a method that fits your comfort and goal:',
+            style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          ..._savingsMethods.map((method) {
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Text(
+                      method['icon']!,
+                      style: const TextStyle(fontSize: 30),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            method['name']!,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(color: AppTheme.primaryColor),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            method['description']!,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+          const SizedBox(height: 32),
+          Text(
+            'Inspiration for Your Journey',
+            style: Theme.of(context).textTheme.headlineSmall,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: _inspirationalQuotes.map((quote) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      '“$quote”',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Center(
+            child: ElevatedButton.icon(
+              onPressed: () {
+                // Simulate PDF download for the savings plan
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Simulating PDF Savings Plan Download... (Will be generated by backend)'),
+                    backgroundColor: AppTheme.primaryColor,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    margin: const EdgeInsets.all(10),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.download_rounded),
+              label: const Text('Download Savings Plan'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
