@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:sakhi/community/discovery_circles_screen.dart';
 import 'package:sakhi/community/events_screen.dart';
 import 'package:sakhi/community/feed_screen.dart';
-import 'package:sakhi/community/profile_screen.dart';
-import 'package:sakhi/community/resources_screen.dart'; // Still needed for currentUser in FAB logic, etc.
-
-// This class now acts as the root for your community section, applying its specific theme.
+// import 'package:sakhi/community/profile_screen.dart';
+import 'package:sakhi/community/resources_screen.dart';
+import 'package:sakhi/screens/home.dart'; 
 class CommunityHomePage extends StatefulWidget {
   const CommunityHomePage({super.key});
 
@@ -16,13 +15,12 @@ class CommunityHomePage extends StatefulWidget {
 class _CommunityHomePageState extends State<CommunityHomePage> {
   int _selectedIndex = 0;
 
-  // List of screens to display in the BottomNavigationBar
   static final List<Widget> _widgetOptions = <Widget>[
     const FeedScreen(),
     const DiscoveryCirclesScreen(),
     const EventsScreen(),
     const ResourcesScreen(),
-    const ProfileScreen(),
+    // const ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -33,27 +31,34 @@ class _CommunityHomePageState extends State<CommunityHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // The Scaffold here provides the single AppBar and BottomNavigationBar for the community section
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Harmony Haven'), // Title applied from AppBarTheme in app_theme.dart
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+          },
+        ),
+        title: const Text('Harmony Haven'),
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search), // Colors inherited from AppBarTheme
+            icon: const Icon(Icons.search),
             onPressed: () {
               // Handle search
             },
           ),
           IconButton(
-            icon: const Icon(Icons.notifications_none), // Colors inherited from AppBarTheme
+            icon: const Icon(Icons.notifications_none),
             onPressed: () {
               // Handle notifications
             },
           ),
         ],
       ),
-      body: _widgetOptions.elementAt(_selectedIndex), // Display the selected screen
+      body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -76,16 +81,15 @@ class _CommunityHomePageState extends State<CommunityHomePage> {
             activeIcon: Icon(Icons.lightbulb),
             label: 'Resources',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.person_outline),
+          //   activeIcon: Icon(Icons.person),
+          //   label: 'Profile',
+          // ),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
-      // Floating Action Button logic remains for the Feed screen
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton(
               onPressed: () {

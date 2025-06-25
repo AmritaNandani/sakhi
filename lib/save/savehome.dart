@@ -7,14 +7,14 @@ import 'package:sakhi/save/progress_tracker_page.dart';
 import 'package:sakhi/save/savings_plan_page.dart';
 import 'package:sakhi/save/settings_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class SaveHomePage extends StatefulWidget {
+  const SaveHomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<SaveHomePage> createState() => _SaveHomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _SaveHomePageState extends State<SaveHomePage> {
   int _selectedIndex = 0; // Current selected tab index
 
   // List of pages to display in the BottomNavigationBar
