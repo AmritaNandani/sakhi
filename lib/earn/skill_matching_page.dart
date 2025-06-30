@@ -1,5 +1,6 @@
 // lib/pages/skill_matching_page.dart
 import 'package:sakhi/earn/business_idea_detail_page.dart';
+import 'package:sakhi/services/api_service.dart';
 import 'package:sakhi/theme/save_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -66,42 +67,46 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
     ),
   ];
 
-  void _getJobIdeas() {
-    FocusScope.of(context).unfocus(); // Dismiss keyboard
-    final String skillsInput = _skillsController.text.trim().toLowerCase();
+ void _getJobIdeas() async {
+  FocusScope.of(context).unfocus(); // Dismiss keyboard
+  final String skillsInput = _skillsController.text.trim();
 
-    if (skillsInput.isEmpty) {
-      _showSnackBar('Please tell me what skills you have!', error: true);
-      return;
-    }
+  if (skillsInput.isEmpty) {
+    _showSnackBar('Please tell me what skills you have!', error: true);
+    return;
+  }
+
+  setState(() {
+    _isLoading = true;
+    _suggestedIdeas = [];
+  });
+
+  try {
+    final response = await ApiService().post("/earn/", {"skill": skillsInput});
+
+    final BusinessIdea idea = BusinessIdea(
+      id: response['id'],
+      title: response['title'],
+      description: response['description'],
+      skillsNeeded: List<String>.from(response['skillsNeeded']),
+      earningPotential: response['earningPotential in rupees'],
+      startupTips: response['startupTips'],
+      requiredMaterials: response['requiredMaterials'],
+    );
 
     setState(() {
-      _isLoading = true;
-      _suggestedIdeas = []; // Clear previous ideas
+      _isLoading = false;
+      _suggestedIdeas = [idea];
     });
 
-    // Simulate AI processing delay and skill matching
-    Future.delayed(const Duration(seconds: 2), () {
-      List<BusinessIdea> matchedIdeas = [];
-      for (var idea in _mockIdeas) {
-        bool match = idea.skillsNeeded.any((skill) => skillsInput.contains(skill.toLowerCase())) ||
-                     skillsInput.contains(idea.title.toLowerCase().split(' ').first); // Simple keyword match
-        if (match) {
-          matchedIdeas.add(idea);
-        }
-      }
-
-      setState(() {
-        _isLoading = false;
-        _suggestedIdeas = matchedIdeas.isNotEmpty ? matchedIdeas : List.from(_mockIdeas); // Fallback to all if no specific match
-        if (matchedIdeas.isEmpty) {
-          _showSnackBar('No direct match, but here are some popular ideas!', error: false);
-        } else {
-          _showSnackBar('Here are some income ideas for you!');
-        }
-      });
+    _showSnackBar('Here’s a business idea matched to your skills!');
+  } catch (e) {
+    setState(() {
+      _isLoading = false;
     });
+    _showSnackBar('Something went wrong: $e', error: true);
   }
+}
 
   void _showSnackBar(String message, {bool error = false}) {
     ScaffoldMessenger.of(context).showSnackBar(

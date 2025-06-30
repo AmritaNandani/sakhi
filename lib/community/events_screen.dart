@@ -6,7 +6,6 @@ class EventsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Removed Scaffold and AppBar here. The parent CommunityHomePage provides it.
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -39,11 +38,13 @@ class _EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isAsset = !event.imageUrl.startsWith('http');
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16.0),
       child: InkWell(
         onTap: () {
-          // Navigate to event details
+          // You can implement event detail navigation here
         },
         borderRadius: BorderRadius.circular(15.0),
         child: Column(
@@ -51,17 +52,29 @@ class _EventCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(15.0)),
-              child: Image.network(
-                event.imageUrl,
-                height: 150,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 150,
-                  color: Colors.grey[200],
-                  child: const Center(child: Icon(Icons.broken_image)),
-                ),
-              ),
+              child: isAsset
+                  ? Image.asset(
+                      event.imageUrl,
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        height: 150,
+                        color: Colors.grey[200],
+                        child: const Center(child: Icon(Icons.broken_image)),
+                      ),
+                    )
+                  : Image.network(
+                      event.imageUrl,
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        height: 150,
+                        color: Colors.grey[200],
+                        child: const Center(child: Icon(Icons.broken_image)),
+                      ),
+                    ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),

@@ -120,7 +120,7 @@ final List<Post> demoPosts = [
     user: priya,
     content:
         "Just finished my morning yoga! Feeling so centered and ready for the day. Any tips for staying motivated on rest days? #WellnessWednesday #YogaLife",
-    imageUrl: 'https://placehold.co/600x400/F56D53/FFFFFF?text=Yoga+Time',
+    imageUrl: "assets/images/yoga.png",
     likes: 150,
     comments: 25,
     shares: 5,
@@ -156,7 +156,7 @@ final List<Post> demoPosts = [
     user: emily,
     content:
         "Reading 'The Power of Habit' and it's truly changing my perspective! Highly recommend. What are you currently reading? #BookClub #PersonalGrowth",
-    imageUrl: 'https://placehold.co/600x400/90EE90/000000?text=Book+Club',
+    imageUrl: 'assets/images/reading.png',
     likes: 90,
     comments: 18,
     shares: 3,
@@ -204,7 +204,7 @@ final List<Event> demoEvents = [
     date: 'July 20, 2025',
     time: '2:00 PM IST',
     location: 'Online (Zoom)',
-    imageUrl: 'https://placehold.co/600x300/F8A670/000000?text=Negotiation+Workshop',
+    imageUrl: 'assets/images/workshop.png',
     attendees: 180,
   ),
   Event(
@@ -213,7 +213,7 @@ final List<Event> demoEvents = [
     date: 'July 25, 2025',
     time: '7:00 AM IST',
     location: 'Online (Google Meet)',
-    imageUrl: 'https://placehold.co/600x300/ADD8E6/000000?text=Meditation+Event',
+    imageUrl: 'assets/images/meditation.png',
     attendees: 95,
   ),
   Event(
@@ -222,7 +222,7 @@ final List<Event> demoEvents = [
     date: 'August 5, 2025',
     time: '6:00 PM IST',
     location: 'Community Cafe, Sector 18, Patna',
-    imageUrl: 'https://placehold.co/600x300/FFC0CB/000000?text=Book+Club+Meetup',
+    imageUrl: 'assets/images/bookclub.png',
     attendees: 30,
   ),
 ];

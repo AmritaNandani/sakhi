@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sakhi/data/data.dart';
+import 'package:sakhi/data/data.dart'; // Your models and demoPosts list
+
 class FeedScreen extends StatelessWidget {
   const FeedScreen({super.key});
 
@@ -48,7 +49,12 @@ class _FeedPostCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(post.user.avatarUrl),
+                  backgroundImage: post.user.avatarUrl.startsWith('http')
+                      ? NetworkImage(post.user.avatarUrl)
+                      : AssetImage(post.user.avatarUrl) as ImageProvider,
+                  onBackgroundImageError: (_, __) {
+                    // Optional error handling
+                  },
                 ),
                 const SizedBox(width: 12),
                 Column(
@@ -75,15 +81,12 @@ class _FeedPostCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             // Post Content
-            Text(
-              post.content,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            Text(post.content, style: Theme.of(context).textTheme.bodyMedium),
             if (post.imageUrl != null) ...[
               const SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(10.0),
-                child: Image.network(
+                child: Image.asset(
                   post.imageUrl!,
                   fit: BoxFit.cover,
                   width: double.infinity,
@@ -107,15 +110,20 @@ class _FeedPostCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: LinearProgressIndicator(
-                            value: entry.value / 100, // Assuming max 100 votes for demo
+                            value: entry.value / 100,
                             backgroundColor: Colors.grey[200],
-                            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).colorScheme.secondary,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),
                         Text('${entry.value}%'),
                         const SizedBox(width: 8),
-                        Text(entry.key, style: Theme.of(context).textTheme.bodySmall),
+                        Text(
+                          entry.key,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                       ],
                     ),
                   );
@@ -160,7 +168,11 @@ class _FeedPostCard extends StatelessWidget {
   }
 
   Widget _buildActionItem(
-      BuildContext context, IconData icon, String text, VoidCallback onPressed) {
+    BuildContext context,
+    IconData icon,
+    String text,
+    VoidCallback onPressed,
+  ) {
     return InkWell(
       onTap: onPressed,
       borderRadius: BorderRadius.circular(20),

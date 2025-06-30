@@ -21,7 +21,7 @@ class _EarnHomePageState extends State<EarnHomePage> {
   // List of pages to display in the BottomNavigationBar for EARN module
   static const List<Widget> _pages = <Widget>[
     SkillMatchingPage(),
-    LearningModulesPage(),
+    // LearningModulesPage(),
     CommunityPage(),
     IncomeTrackerPage(),
   ];
@@ -47,10 +47,10 @@ class _EarnHomePageState extends State<EarnHomePage> {
             icon: Icon(FontAwesomeIcons.lightbulb), // Skill Matching
             label: 'Ideas',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school_rounded), // Learning Modules
-            label: 'Learn',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.school_rounded), // Learning Modules
+          //   label: 'Learn',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people_alt_rounded), // Community
             label: 'Community',

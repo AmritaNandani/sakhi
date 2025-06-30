@@ -22,7 +22,7 @@ class _SaveHomePageState extends State<SaveHomePage> {
     GoalSettingPage(),
     SavingsPlanPage(),
     ProgressTrackerPage(),
-    SettingsPage(),
+    // SettingsPage(),
   ];
 
   // Function to handle tab selection
@@ -54,10 +54,10 @@ class _SaveHomePageState extends State<SaveHomePage> {
             icon: Icon(Icons.track_changes_rounded),
             label: 'Progress',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_rounded),
-            label: 'Settings',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.settings_rounded),
+          //   label: 'Settings',
+          // ),
         ],
         currentIndex: _selectedIndex, // Set the current selected index
         onTap: _onItemTapped, // Callback when a tab is tapped

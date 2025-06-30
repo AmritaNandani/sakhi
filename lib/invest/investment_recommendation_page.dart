@@ -1,7 +1,8 @@
-// lib/pages/investment_recommendation_page.dart
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:sakhi/invest/investment_scheme.dart';
 import 'package:sakhi/theme/save_theme.dart';
 
@@ -18,104 +19,59 @@ class _InvestmentRecommendationPageState extends State<InvestmentRecommendationP
   bool _isLoading = false;
   InvestmentScheme? _recommendedScheme;
 
-  // Mock schemes for demonstration (actual data from backend/AI)
-  final List<InvestmentScheme> _mockSchemes = [
-    InvestmentScheme(
-      id: 'ppf',
-      name: 'Public Provident Fund (PPF)',
-      description: 'A long-term, government-backed savings-cum-tax saving scheme in India.',
-      category: 'Government',
-      riskLevel: 'Low',
-      typicalReturns: '7.1% p.a. (currently)',
-      minInvestment: '₹500/year',
-      lockInPeriod: '15 years',
-      taxBenefits: 'EEE (Exempt, Exempt, Exempt) u/s 80C',
-      howToStart: 'Open at Post Office or authorized bank branches.',
-      icon: FontAwesomeIcons.buildingColumns,
-    ),
-    InvestmentScheme(
-      id: 'ssy',
-      name: 'Sukanya Samriddhi Yojana (SSY)',
-      description: 'A small deposit scheme for the girl child, launched under Beti Bachao Beti Padhao.',
-      category: 'Government',
-      riskLevel: 'Low',
-      typicalReturns: '8.2% p.a. (currently)',
-      minInvestment: '₹250/year',
-      lockInPeriod: 'Until girl is 21 or married after 18',
-      taxBenefits: 'EEE (Exempt, Exempt, Exempt) u/s 80C',
-      howToStart: 'Open at Post Office or authorized bank branches in the name of a girl child below 10 years.',
-      icon: Icons.girl_rounded,
-    ),
-    InvestmentScheme(
-      id: 'digital_gold',
-      name: 'Digital Gold',
-      description: 'Invest in 24K pure gold digitally without the hassle of physical storage.',
-      category: 'Commodity',
-      riskLevel: 'Medium',
-      typicalReturns: 'Linked to gold price fluctuations',
-      minInvestment: '₹100',
-      lockInPeriod: 'None (can sell anytime)',
-      taxBenefits: 'Taxable as capital gains',
-      howToStart: 'Buy through various platforms like Google Pay, Paytm, MMTC-PAMP, etc.',
-      icon: FontAwesomeIcons.coins,
-    ),
-    InvestmentScheme(
-      id: 'sip_equity',
-      name: 'SIP in Equity Mutual Fund (Growth)',
-      description: 'Systematic Investment Plan in equity funds for long-term wealth creation, subject to market risks.',
-      category: 'Mutual Fund',
-      riskLevel: 'High',
-      typicalReturns: '12-15%+ p.a. (historical)',
-      minInvestment: '₹500/month',
-      lockInPeriod: 'No lock-in, but recommended for >5 years',
-      taxBenefits: 'Taxable (LTCG/STCG) unless ELSS',
-      howToStart: 'Through a Mutual Fund distributor, bank, or online platforms (e.g., Groww, Zerodha Coin).',
-      icon: FontAwesomeIcons.chartLine,
-    ),
-  ];
-
-  void _getInvestmentRecommendation() {
-    FocusScope.of(context).unfocus(); // Dismiss keyboard
+  void _getInvestmentRecommendation() async {
+    FocusScope.of(context).unfocus();
     final double? amount = double.tryParse(_amountController.text);
 
     if (amount == null || amount <= 0 || _selectedRiskLevel == null) {
       _showSnackBar('Please enter a valid amount and select your risk level.', error: true);
-      setState(() {
-        _recommendedScheme = null;
-      });
+      setState(() => _recommendedScheme = null);
       return;
     }
 
     setState(() {
       _isLoading = true;
-      _recommendedScheme = null; // Clear previous recommendation
+      _recommendedScheme = null;
     });
 
-    // Simulate AI processing and recommendation logic
-    Future.delayed(const Duration(seconds: 2), () {
-      InvestmentScheme? recommendation;
-      if (_selectedRiskLevel == 'Low') {
-        if (amount >= 500) {
-          recommendation = _mockSchemes.firstWhere((s) => s.id == 'ppf');
+    try {
+      final response = await http.post(
+        Uri.parse('${dotenv.env['BACKEND_URL']}/invest/'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'amount': amount, 'riskLevel': _selectedRiskLevel}),
+      );
+
+      if (response.statusCode == 200) {
+        final List data = jsonDecode(response.body);
+        if (data.isNotEmpty) {
+          final item = data[0]; // take the first recommendation
+          setState(() {
+            _recommendedScheme = InvestmentScheme(
+              id: item['id'],
+              name: item['name'],
+              description: item['description'],
+              category: item['category'],
+              riskLevel: item['riskLevel'],
+              typicalReturns: item['typicalReturns'],
+              minInvestment: item['minInvestment'],
+              lockInPeriod: item['lockInPeriod'],
+              taxBenefits: item['taxBenefits'],
+              howToStart: item['howToStart'],
+              icon: FontAwesomeIcons.chartLine, // default icon
+            );
+          });
+          _showSnackBar('Here\'s a personalized investment recommendation for you!');
         } else {
-          recommendation = _mockSchemes.firstWhere((s) => s.id == 'ssy'); // If amount is small
+          _showSnackBar('No recommendations found. Try a different amount.', error: true);
         }
-      } else if (_selectedRiskLevel == 'Medium') {
-        recommendation = _mockSchemes.firstWhere((s) => s.id == 'digital_gold');
-      } else if (_selectedRiskLevel == 'High') {
-        recommendation = _mockSchemes.firstWhere((s) => s.id == 'sip_equity');
+      } else {
+        _showSnackBar('Server error: ${response.statusCode}', error: true);
       }
-
-      setState(() {
-        _isLoading = false;
-        _recommendedScheme = recommendation;
-        if (_recommendedScheme != null) {
-          _showSnackBar('Here\'s a personalized investment recommendation for you!', error: false);
-        } else {
-          _showSnackBar('Could not find a suitable recommendation for now. Try different inputs.', error: true);
-        }
-      });
-    });
+    } catch (e) {
+      _showSnackBar('Something went wrong. Please check your internet or try again.', error: true);
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   void _showSnackBar(String message, {bool error = false}) {
@@ -163,8 +119,7 @@ class _InvestmentRecommendationPageState extends State<InvestmentRecommendationP
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.mic_rounded, color: AppTheme.primaryColor),
                         onPressed: () {
-                          // Simulate voice input for amount
-                          _amountController.text = '500'; // Example
+                          _amountController.text = '500';
                           _showSnackBar('Voice input simulated: "₹500 per month"');
                         },
                       ),
@@ -178,18 +133,10 @@ class _InvestmentRecommendationPageState extends State<InvestmentRecommendationP
                       hintText: 'Select your risk preference',
                       prefixIcon: const Icon(Icons.shield_rounded, color: AppTheme.primaryColor),
                     ),
-                    items: <String>['Low', 'Medium', 'High']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedRiskLevel = newValue;
-                      });
-                    },
+                    items: ['Low', 'Medium', 'High']
+                        .map((value) => DropdownMenuItem(value: value, child: Text(value)))
+                        .toList(),
+                    onChanged: (value) => setState(() => _selectedRiskLevel = value),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
@@ -238,22 +185,12 @@ class _InvestmentRecommendationPageState extends State<InvestmentRecommendationP
                     _buildInfoRow('Lock-in Period:', _recommendedScheme!.lockInPeriod),
                     _buildInfoRow('Tax Benefits:', _recommendedScheme!.taxBenefits),
                     const SizedBox(height: 16),
-                    Text(
-                      'How to Get Started:',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                    Text('How to Get Started:', style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 8),
-                    Text(
-                      _recommendedScheme!.howToStart,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
+                    Text(_recommendedScheme!.howToStart, style: Theme.of(context).textTheme.bodyLarge),
                     const SizedBox(height: 24),
-                    Text(
-                      'Projected Growth (Mock Chart):',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                    Text('Projected Growth (Mock Chart):', style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 8),
-                    // Placeholder for chart (actual chart generated by backend)
                     Container(
                       height: 150,
                       decoration: BoxDecoration(
@@ -273,15 +210,7 @@ class _InvestmentRecommendationPageState extends State<InvestmentRecommendationP
                     Center(
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Simulating Investment Roadmap PDF download for ${_recommendedScheme!.name}...'),
-                              backgroundColor: AppTheme.primaryColor,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              margin: const EdgeInsets.all(10),
-                            ),
-                          );
+                          _showSnackBar('Simulating Investment Roadmap PDF download for ${_recommendedScheme!.name}');
                         },
                         icon: const Icon(Icons.download_rounded),
                         label: const Text('Download Investment Roadmap'),
@@ -293,11 +222,7 @@ class _InvestmentRecommendationPageState extends State<InvestmentRecommendationP
             ),
           ],
           const SizedBox(height: 20),
-          Text(
-            'Start your wealth creation journey!',
-            style: Theme.of(context).textTheme.bodyLarge,
-            textAlign: TextAlign.center,
-          ),
+          Text('Start your wealth creation journey!', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
         ],
       ),
     );
@@ -309,20 +234,14 @@ class _InvestmentRecommendationPageState extends State<InvestmentRecommendationP
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: highlight ? FontWeight.bold : FontWeight.normal,
-              color: highlight ? AppTheme.primaryColor : AppTheme.textColor.withOpacity(0.8),
-            ),
-          ),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: highlight ? FontWeight.bold : FontWeight.normal,
-              color: highlight ? AppTheme.primaryColor : AppTheme.textColor,
-            ),
-          ),
+          Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: highlight ? FontWeight.bold : FontWeight.normal,
+            color: highlight ? AppTheme.primaryColor : AppTheme.textColor.withOpacity(0.8),
+          )),
+          Text(value, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: highlight ? FontWeight.bold : FontWeight.normal,
+            color: highlight ? AppTheme.primaryColor : AppTheme.textColor,
+          )),
         ],
       ),
     );

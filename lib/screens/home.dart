@@ -6,12 +6,16 @@ import 'package:sakhi/community/communityhome.dart';
 
 // --- Placeholder imports for your pre-made pages ---
 import 'package:sakhi/earn/earnhome.dart';
+import 'package:sakhi/earn/learning_modules_page.dart';
+import 'package:sakhi/earn/skill_matching_page.dart';
 import 'package:sakhi/invest/investhome.dart';
+import 'package:sakhi/invest/investment_calculator.dart';
 import 'package:sakhi/learn/ask_sakhi.dart';
 import 'package:sakhi/learn/learnhome.dart';
+import 'package:sakhi/save/goal_setting_page.dart';
 import 'package:sakhi/save/savehome.dart';
-import 'package:sakhi/theme/save_theme.dart'; // Assuming AppTheme is defined here
-import '../navbar/about.dart';
+import 'package:sakhi/theme/save_theme.dart'; 
+import '../navbar/about.dart' hide AppTheme;
 import 'package:sakhi/screens/profile.dart';
 import 'package:sakhi/screens/calculation.dart';
 // ----------------------------------------------------
@@ -24,14 +28,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0; // Current selected tab in bottom navigation
+  int _selectedIndex = 0; 
 
   static final List<Widget> _bottomNavPages = <Widget>[
-    _HomeDashboardContent(), // Our new sleek dashboard
+    _HomeDashboardContent(), 
     const CalculationsPage(),
     const CommunityHomePage(),
     const AskSakhiChatbotPage(),
-    const AboutPage(),
+    const AboutUsPage(),
     const ProfilePage(),
   ];
 
@@ -42,27 +46,25 @@ class _HomePageState extends State<HomePage> {
   }
 
   bool get _showAppBar {
-    // Hide AppBar for Calculator (1), Community (2), and Ask Sakhi (3)
     return !(_selectedIndex == 1 || _selectedIndex == 2 || _selectedIndex == 3);
   }
 
   bool get _showBottomNavBar {
-    // Hide BottomNavBar for Community (2)
     return _selectedIndex != 2;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true, // Allows body to go behind AppBar for custom effects
+      extendBodyBehindAppBar: true, 
       appBar: _showAppBar
           ? AppBar(
-              backgroundColor: Colors.transparent, // Make AppBar transparent
-              elevation: 0, // Remove shadow
+              backgroundColor: Colors.transparent,
+              elevation: 0, 
               title: Text(
                 'Sakhi',
                 style: TextStyle(
-                  color: AppTheme.primaryColor, // Use primary color for title
+                  color: AppTheme.primaryColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -110,7 +112,7 @@ class _HomePageState extends State<HomePage> {
               selectedItemColor: AppTheme.primaryColor,
               unselectedItemColor: Colors.grey[600],
               type: BottomNavigationBarType.fixed,
-              backgroundColor: AppTheme.cardColor, // A slightly different background for nav bar
+              backgroundColor: AppTheme.cardColor, 
               elevation: 8,
             )
           : null,
@@ -122,7 +124,6 @@ class _HomeDashboardContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // A subtle background gradient for the entire page
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -130,7 +131,6 @@ class _HomeDashboardContent extends StatelessWidget {
           colors: [
             Colors.white,
             AppTheme.primaryColor.withOpacity(0.05),
-            // Lightest shade to complement your theme
           ],
         ),
       ),
@@ -166,7 +166,7 @@ class _HomeDashboardContent extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               mainAxisSpacing: 20.0,
               crossAxisSpacing: 20.0,
-              childAspectRatio: 0.9, // Slightly adjust aspect ratio to accommodate slogan
+              childAspectRatio: 0.9, 
               children: [
                 _buildSleekFeatureItem(
                   context,
@@ -179,7 +179,7 @@ class _HomeDashboardContent extends StatelessWidget {
                 _buildSleekFeatureItem(
                   context,
                   title: 'INVEST',
-                  subtitle: 'Make Her Money Work for Her', // Slogan added
+                  subtitle: 'Make Her Money Work for Her',
                   icon: Icons.trending_up_rounded,
                   gradientColors: [Colors.orange.shade300, Colors.orange.shade600],
                   page: const InvestHomePage(),
@@ -187,7 +187,7 @@ class _HomeDashboardContent extends StatelessWidget {
                 _buildSleekFeatureItem(
                   context,
                   title: 'SAVE',
-                  subtitle: 'Build Her Habit of Savings', // Slogan added
+                  subtitle: 'Build Her Habit of Savings', 
                   icon: Icons.savings_rounded,
                   gradientColors: [Colors.blue.shade300, Colors.blue.shade600],
                   page: const SaveHomePage(),
@@ -195,7 +195,7 @@ class _HomeDashboardContent extends StatelessWidget {
                 _buildSleekFeatureItem(
                   context,
                   title: 'EARN',
-                  subtitle: 'Convert Her Skills to Income', // Slogan added
+                  subtitle: 'Convert Her Skills to Income', 
                   icon: FontAwesomeIcons.briefcase,
                   gradientColors: [Colors.purple.shade300, Colors.purple.shade600],
                   page: const EarnHomePage(),
@@ -213,49 +213,28 @@ class _HomeDashboardContent extends StatelessWidget {
                   ),
             ),
             const SizedBox(height: 15),
-            SizedBox(
-              height: 120, // Define a fixed height for horizontal scroll
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  _buildQuickActionPill(
-                    context,
-                    label: 'Set New Savings Goal',
-                    icon: Icons.star_rounded,
-                    onPressed: () {
-                      _showSnackBar(context, 'Navigating to Set New Savings Goal...');
-                    },
-                  ),
-                  const SizedBox(width: 15),
-                  _buildQuickActionPill(
-                    context,
-                    label: 'Find Income Ideas',
-                    icon: FontAwesomeIcons.lightbulb,
-                    onPressed: () {
-                      _showSnackBar(context, 'Navigating to Find Income Ideas...');
-                    },
-                  ),
-                  const SizedBox(width: 15),
-                  _buildQuickActionPill(
-                    context,
-                    label: 'View Investment Portfolio',
-                    icon: Icons.pie_chart_rounded,
-                    onPressed: () {
-                      _showSnackBar(context, 'Viewing Investment Portfolio...');
-                    },
-                  ),
-                  const SizedBox(width: 15),
-                  _buildQuickActionPill(
-                    context,
-                    label: 'Explore Learning Modules',
-                    icon: Icons.menu_book_rounded,
-                    onPressed: () {
-                      _showSnackBar(context, 'Exploring Learning Modules...');
-                    },
-                  ),
-                ],
-              ),
-            ),
+            const SizedBox(height: 15),
+SizedBox(
+  height: 120,
+  child: ListView(
+    scrollDirection: Axis.horizontal,
+    children: [
+      _buildQuickActionPill(
+        context,
+        label: 'Set New Savings Goal',
+        icon: Icons.star_rounded,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const GoalSettingPage()),
+          );
+        },
+      ),
+      const SizedBox(width: 15),
+    ],
+  ),
+),
+
             const SizedBox(height: 40),
 
             Center(
